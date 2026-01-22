@@ -2,7 +2,7 @@ import streamlit as st
 import math
 
 # ───────────────────────────────────────────────
-# Custom theme (maroon red + black from logo)
+# Custom theme (maroon red + black from Armor logo)
 # ───────────────────────────────────────────────
 st.markdown("""
     <style>
@@ -22,15 +22,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Logo at top
-st.image("armor_logo.png", width=None)
+# Logo at top – use_container_width is the correct modern parameter
+st.image("armor_logo.png", use_container_width=True)
 
 # Title and description
 st.title("RSC Box ECT Calculator")
-st.markdown("Calculate the **Recommended Minimum ECT** for Regular Slotted Containers based on pallet, storage, and transit conditions. Brought to you by **Armor Packaging**.")
+st.markdown(
+    "Calculate the **Recommended Minimum ECT** for Regular Slotted Containers "
+    "based on pallet, storage, and transit conditions. "
+    "Brought to you by **Armor Packaging**."
+)
 
 # ───────────────────────────────────────────────
-# Lookups (verified against your Excel)
+# Lookup dictionaries (exact match to your Excel)
 # ───────────────────────────────────────────────
 flute_thickness = {
     "C": 0.1875,
@@ -63,7 +67,12 @@ misalignment_factor = {
 # ───────────────────────────────────────────────
 # Tabs
 # ───────────────────────────────────────────────
-tab1, tab2, tab3, tab4 = st.tabs(["Box Information", "Pallet Load", "Strength Reduction Factors", "Results"])
+tab1, tab2, tab3, tab4 = st.tabs([
+    "Box Information",
+    "Pallet Load",
+    "Strength Reduction Factors",
+    "Results"
+])
 
 # ── Tab 1: Box Information ───────────────────────
 with tab1:
@@ -83,7 +92,7 @@ with tab2:
     Nd = st.number_input("Number of pallet loads stacked in transit (Nd)", min_value=1, value=1, step=1)
 
     st.subheader("Palletized Load Diagram")
-    st.image("pallet_diagram.png", width=None)
+    st.image("pallet_diagram.png", use_container_width=True)
     st.markdown("""
     **Key labels:**
     - ↓ **n** = number of box layers stacked on one pallet  
@@ -96,7 +105,7 @@ with tab2:
 with tab3:
     st.header("Strength Reduction Factors (SRF)")
 
-    # Non-visual inputs
+    # Non-visual
     rh_storage = st.selectbox("Relative humidity in storage (%)", options=list(rh_factor.keys()), index=4)
     rh_transit = st.selectbox("Relative humidity in transit (%)", options=list(rh_factor.keys()), index=3)
     dwell_storage = st.selectbox("Storage warehouse dwell time", options=list(dwell_factor.keys()), index=5)
@@ -109,30 +118,36 @@ with tab3:
     col_o1, col_o2 = st.columns(2)
     with col_o1:
         st.image("https://freightsnap.com/wp-content/uploads/2019/01/Pallet_Packing_Illustrations-03.jpg",
-                 caption="Minimal / no overhang\n→ better stability (factor ≈ 1.0)")
+                 caption="Minimal / no overhang → better stability (factor ≈ 1.0)",
+                 use_container_width=True)
     with col_o2:
         st.image("https://assests.polcdn.com/blog/best-way-to-pack-pallets/avoid-overhang.jpg",
-                 caption="Significant overhang\n→ reduced strength (factor 0.6–0.9)")
+                 caption="Significant overhang → reduced strength (factor 0.6–0.9)",
+                 use_container_width=True)
 
     # Gapped Pallet
     st.markdown("**Gapped Pallet**")
     col_g1, col_g2 = st.columns(2)
     with col_g1:
         st.image("https://plasticpalletsales.com/wp-content/uploads/2022/04/Closed-Deck-Solid-Deck-Pallets.png",
-                 caption="Closed / solid deck\n→ full support (factor 1.0)")
+                 caption="Closed / solid deck → full support (factor 1.0)",
+                 use_container_width=True)
     with col_g2:
         st.image("https://www.goplasticpallets.com/wp-content/uploads/2024/12/GPP-Open-vs-Closed-2024.png",
-                 caption="Gapped / open deck\n→ less support (factor 0.8)")
+                 caption="Gapped / open deck → less support (factor 0.8)",
+                 use_container_width=True)
 
     # Misalignment
     st.markdown("**Misalignment**")
     col_m1, col_m2 = st.columns(2)
     with col_m1:
         st.image("https://igps.net/wp-content/uploads/2024/03/iGPS-Blog-Stacking-Loaded-Pallets-Everything-You-Need-to-Know_v1.jpg",
-                 caption="Properly aligned\n→ stronger stack (factor 1.0)")
+                 caption="Properly aligned → stronger stack (factor 1.0)",
+                 use_container_width=True)
     with col_m2:
         st.image("https://www.researchgate.net/publication/289150258/figure/fig9/AS:1008538268753933@1617465669985/Test-setup-for-misaligned-three-high-stacks-of-boxes-along-the-long-edge.ppm",
-                 caption="Misaligned / offset\n→ weaker stack (factor 0.45–0.74)")
+                 caption="Misaligned / offset → weaker stack (factor 0.45–0.74)",
+                 use_container_width=True)
 
     # Stacking type
     st.markdown("**Stacking type**")
@@ -140,20 +155,26 @@ with tab3:
     col_s1, col_s2 = st.columns(2)
     with col_s1:
         st.image("https://blog.robotiq.com/hs-fs/hubfs/Stacking_Column_V2.jpg?width=323&height=202&name=Stacking_Column_V2.jpg",
-                 caption="Column stacking\n→ aligned vertically\n→ higher strength (factor 1.0)")
+                 caption="Column stacking – aligned vertically – higher strength (factor 1.0)",
+                 use_container_width=True)
     with col_s2:
         st.image("https://blog.robotiq.com/hs-fs/hubfs/Stacking_Interlock_V2.jpg?width=323&height=202&name=Stacking_Interlock_V2.jpg",
-                 caption="Interlocking stacking\n→ offset layers\n→ reduced strength (factor 0.6)")
+                 caption="Interlocking stacking – offset layers – reduced strength (factor 0.6)",
+                 use_container_width=True)
 
 # ───────────────────────────────────────────────
-# Calculations (exact match to your Excel)
+# Calculations – safe version
 # ───────────────────────────────────────────────
 inside_perimeter = 2 * (L + w)
-board_thickness = flute_thickness[flute_type]
+board_thickness = flute_thickness.get(flute_type, 0.1875)
 
-PWC_s = (pallet_weight / npl) * (Ns - 1) if npl != 0 else 0
+if npl == 0:
+    PWC_s = PWC_d = 0
+else:
+    PWC_s = (pallet_weight / npl) * (Ns - 1)
+    PWC_d = (pallet_weight / npl) * (Nd - 1)
+
 SSp_s = (Ns * n - 1) * W + PWC_s
-PWC_d = (pallet_weight / npl) * (Nd - 1) if npl != 0 else 0
 SSp_d = ((Nd * n - 1) * W + PWC_d) * 3
 
 interlock_factor = 0.6 if stacking_type == "Interlocking" else 1.0
@@ -161,22 +182,26 @@ gapped_factor = 0.8 if gapped_pallet == "Yes" else 1.0
 
 factors = [
     interlock_factor,
-    overhang_factor[overhang],
+    overhang_factor.get(overhang, 1.0),
     gapped_factor,
-    misalignment_factor[misalignment]
+    misalignment_factor.get(misalignment, 1.0)
 ]
 factors_sorted = sorted(factors)
 small1 = factors_sorted[0]
-small2 = factors_sorted[1]
+small2 = factors_sorted[1] if len(factors_sorted) > 1 else 1.0
 
-SRF_s = (rh_factor[rh_storage] * dwell_factor[dwell_storage]) * small1 * small2
-SRF_d = (rh_factor[rh_transit] * dwell_factor[dwell_transit]) * small1 * small2
+SRF_s = (rh_factor.get(rh_storage, 1.0) * dwell_factor.get(dwell_storage, 1.0)) * small1 * small2
+SRF_d = (rh_factor.get(rh_transit, 1.0) * dwell_factor.get(dwell_transit, 1.0)) * small1 * small2
 
-CS_s = SSp_s / SRF_s if SRF_s != 0 else 0
-CS_d = SSp_d / SRF_d if SRF_d != 0 else 0
+CS_s = SSp_s / SRF_s if SRF_s > 0 else 0
+CS_d = SSp_d / SRF_d if SRF_d > 0 else 0
 
 max_cs = max(CS_s, CS_d)
-ect = max_cs / (5.87 * math.sqrt(board_thickness * inside_perimeter)) if max_cs > 0 and board_thickness > 0 else 0
+
+if board_thickness > 0 and inside_perimeter > 0:
+    ect = max_cs / (5.87 * math.sqrt(board_thickness * inside_perimeter))
+else:
+    ect = 0
 
 # ── Tab 4: Results ───────────────────────────────
 with tab4:
@@ -186,7 +211,8 @@ with tab4:
     with col1:
         st.metric("**Recommended Minimum ECT**", f"{ect:.1f} lb/in")
     with col2:
-        st.metric("Controlling CS", f"{max_cs:.0f} lb", delta="Storage" if CS_s > CS_d else "Transit")
+        st.metric("Controlling CS", f"{max_cs:.0f} lb",
+                  delta="Storage" if CS_s > CS_d else "Transit")
 
     with st.expander("Detailed breakdown", expanded=False):
         st.markdown(f"**Inside perimeter** = {inside_perimeter:.2f} in")
@@ -200,4 +226,5 @@ with tab4:
         st.markdown(f"PWC(d) = {PWC_d:.1f} lb")
         st.markdown(f"SSp(d) = {SSp_d:.1f} lb")
 
+st.caption("ECT Calculator • Armor Packaging • v1.4 • January 2026")
 st.caption("ECT Calculator • Armor Packaging • v1.3 • 2026")
