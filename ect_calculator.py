@@ -1,11 +1,33 @@
 import streamlit as st
 import math
 
+# Custom theme CSS (red-black from logo)
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: white;
+    }
+    .stButton > button {
+        background-color: #A6192E; /* Maroon red */
+        color: white;
+    }
+    h1, h2, h3, h4 {
+        color: #A6192E;
+    }
+    .stSelectbox, .stNumberInput {
+        border-color: #000000; /* Black accents */
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Logo at top
+st.image("armor_logo.png", use_column_width=True)
+
 # Title and description
 st.title("RSC Box ECT Calculator")
-st.markdown("Enter box and pallet details to calculate the Recommended Minimum ECT. Defaults match your sample.")
+st.markdown("Enter box and pallet details to calculate the Recommended Minimum ECT. Defaults match your sample. Brought to you by Armor Packaging.")
 
-# Dictionaries for lookups (verified against Excel SWITCH formulas)
+# Dictionaries for lookups (unchanged, accurate)
 flute_thickness = {
     "C": 0.1875,
     "BC": 0.3125,
@@ -34,14 +56,14 @@ misalignment_factor = {
     "0in.": 1.0, "0.5in.": 0.74, "1in.": 0.57, "1.5in.": 0.45
 }
 
-# Tabs for organization
+# Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Box Information", "Pallet Load", "Strength Reduction Factors", "Results"])
 
 with tab1:
     st.header("Box Information")
-    L = st.number_input("Box length (L)", value=17.125, step=0.125)
-    w = st.number_input("Box width (w)", value=8.75, step=0.125)
-    W = st.number_input("Package weight (W)", value=11.25, step=0.25)
+    L = st.number_input("Box length (L) inches", value=17.125, step=0.125)
+    w = st.number_input("Box width (w) inches", value=8.75, step=0.125)
+    W = st.number_input("Package weight (W) lb", value=11.25, step=0.25)
     flute_type = st.selectbox("Board flute type", options=list(flute_thickness.keys()), index=0)  # Default "C"
 
 with tab2:
@@ -49,20 +71,18 @@ with tab2:
     n = st.number_input("Number of layers of packages (n)", value=9, step=1)
     npl = st.number_input("Number of packages per layer (npl)", value=10, step=1)
     Ns = st.number_input("Number of pallet load stacked in storage (Ns)", value=2, step=1)
-    pallet_weight = st.number_input("Pallet weight", value=45, step=1)
+    pallet_weight = st.number_input("Pallet weight lb", value=45, step=1)
     Nd = st.number_input("Number of pallet load stacked in transit (Nd)", value=1, step=1)
     
-    # Diagram with explanations
+    # Pallet diagram with labels
     st.subheader("Palletized Load Diagram")
-    st.image(
-        "https://www.sostocked.com/wp-content/uploads/2022/05/Block-Pallet-1-1.png",
-        caption="Visual representation of palletized boxes."
-    )
+    st.image("pallet_diagram.png", caption="Basic pallet load structure.")
     st.markdown("""
-    - **n (layers)**: Vertical arrow → height of boxes stacked on one pallet (e.g., 9 layers high).
-    - **npl (packages per layer)**: Horizontal arrows → number of boxes side-by-side per layer (e.g., 10 per row).
-    - **Ns (storage stacking)**: Downward arrow on top → how many full pallets are stacked in warehouse (e.g., 2 pallets high).
-    - **Nd (transit stacking)**: Similar to Ns but for shipping (e.g., 1 pallet high, with dynamic factor applied).
+    **Labels:**
+    - ↓ **n (layers)**: Vertical stack height — number of box layers on a single pallet (e.g., 9 layers).
+    - ↔ **npl (packages per layer)**: Horizontal layout — boxes per row/layer on the pallet (e.g., 10 per layer).
+    - ↑ **Ns (storage stacking)**: How many full pallets are stacked vertically in warehouse (e.g., 2 high).
+    - ↑ **Nd (transit stacking)**: Similar to Ns but during shipping (e.g., 1 high, with extra dynamic load factor).
     """)
 
 with tab3:
@@ -70,20 +90,29 @@ with tab3:
     rh_storage = st.selectbox("Relative humidity in storage (%)", options=list(rh_factor.keys()), index=4)  # Default 50
     rh_transit = st.selectbox("Relative humidity in transit (%)", options=list(rh_factor.keys()), index=3)  # Default 45
     dwell_storage = st.selectbox("Storage warehouse dwell time", options=list(dwell_factor.keys()), index=5)  # Default "3d."
-    stacking_type = st.selectbox("Interlocking stacking or column stacking", options=["Interlocking", "Column"], index=0)
-    overhang = st.selectbox("Overhang off the edge of the pallet", options=list(overhang_factor.keys()), index=2)  # Default "0.8in."
+    overhang = st.selectbox("Overhang off the edge of the pallet inches", options=list(overhang_factor.keys()), index=2)  # Default "0.8in."
     gapped_pallet = st.selectbox("Gapped Pallet", options=["Yes", "No"], index=0)
-    misalignment = st.selectbox("Misalignment", options=list(misalignment_factor.keys()), index=0)  # Default "0in."
+    misalignment = st.selectbox("Misalignment inches", options=list(misalignment_factor.keys()), index=0)  # Default "0in."
     dwell_transit = st.selectbox("Storage transit dwell time", options=list(dwell_factor.keys()), index=8)  # Default "30d."
+    
+    # Stacking type with visual comparison
+    st.subheader("Stacking Type")
+    stacking_type = st.selectbox("Interlocking stacking or column stacking", options=["Interlocking", "Column"], index=0)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.image("https://blog.robotiq.com/hs-fs/hubfs/Stacking_Column_V2.jpg?width=323&height=202&name=Stacking_Column_V2.jpg", caption="Column Stacking: Boxes aligned straight up for max stability but less interlock.")
+    with col2:
+        st.image("https://blog.robotiq.com/hs-fs/hubfs/Stacking_Interlock_V2.jpg?width=323&height=202&name=Stacking_Interlock_V2.jpg", caption="Interlocking Stacking: Boxes offset for better grip but reduced strength (SRF 0.6).")
 
-# Calculations (run always, shown in Results tab)
+# Calculations (unchanged)
 inside_perimeter = 2 * (L + w)
 board_thickness = flute_thickness[flute_type]
 
 PWC_s = (pallet_weight / npl) * (Ns - 1)
 SSp_s = (Ns * n - 1) * W + PWC_s
 PWC_d = (pallet_weight / npl) * (Nd - 1)
-SSp_d = ((Nd * n - 1) * W + PWC_d) * 3  # Dynamic factor of 3 for transit
+SSp_d = ((Nd * n - 1) * W + PWC_d) * 3  # Dynamic factor of 3
 
 interlock_factor = 0.6 if stacking_type == "Interlocking" else 1.0
 gapped_factor = 0.8 if gapped_pallet == "Yes" else 1.0
@@ -104,14 +133,14 @@ ect = max_cs / (5.87 * math.sqrt(board_thickness * inside_perimeter)) if max_cs 
 
 with tab4:
     st.header("Results")
-    st.markdown(f"**Inside Perimeter:** {inside_perimeter:.2f}")
-    st.markdown(f"**Board Thickness:** {board_thickness:.4f}")
-    st.markdown(f"**PWC(s):** {PWC_s:.2f}")
-    st.markdown(f"**SSp(s):** {SSp_s:.2f}")
-    st.markdown(f"**PWC(d):** {PWC_d:.2f}")
-    st.markdown(f"**SSp(d):** {SSp_d:.2f}")
+    st.markdown(f"**Inside Perimeter:** {inside_perimeter:.2f} inches")
+    st.markdown(f"**Board Thickness:** {board_thickness:.4f} inches")
+    st.markdown(f"**PWC(s):** {PWC_s:.2f} lb")
+    st.markdown(f"**SSp(s):** {SSp_s:.2f} lb")
+    st.markdown(f"**PWC(d):** {PWC_d:.2f} lb")
+    st.markdown(f"**SSp(d):** {SSp_d:.2f} lb")
     st.markdown(f"**SRF(s):** {SRF_s:.4f}")
     st.markdown(f"**SRF(d):** {SRF_d:.4f}")
-    st.markdown(f"**CS(s):** {CS_s:.2f}")
-    st.markdown(f"**CS(d):** {CS_d:.2f}")
-    st.markdown(f"### Recommended Minimum ECT: {ect:.2f}")
+    st.markdown(f"**CS(s):** {CS_s:.2f} lb")
+    st.markdown(f"**CS(d):** {CS_d:.2f} lb")
+    st.markdown(f"### Recommended Minimum ECT: {ect:.2f} lb/in")
