@@ -25,9 +25,9 @@ st.image("armor_logo.png", use_container_width=True)
 
 # Title and description
 st.title("RSC Box ECT Calculator")
-st.markdown("Calculate the Recommended Minimum ECT for Regular Slotted Containers (RSC) based on pallet, storage, and transit conditions. Defaults match your sample Excel file. Brought to you by Armor Packaging.")
+st.markdown("Enter box and pallet details below to calculate the Recommended Minimum ECT. Brought to you by Armor Packaging.")
 
-# Dictionaries for lookups (verified against Excel)
+# Dictionaries for lookups (exact match to Excel SWITCH formulas)
 flute_thickness = {
     "C": 0.1875,
     "BC": 0.3125,
@@ -105,17 +105,17 @@ with tab3:
         overhang = st.selectbox("Overhang", options=list(overhang_factor.keys()), index=2)  # Default "0.8in."
         col1, col2 = st.columns(2)
         with col1:
-            st.image("https://freightsnap.com/wp-content/uploads/2019/01/Pallet_Packing_Illustrations-03.jpg", caption="No overhang: Full support on pallet (factor 1.0)", use_container_width=True)
+            st.image("https://www.shipit.ca/wp-content/uploads/2015/04/pallet-overhang.jpg", caption="Overhang: Boxes hanging off edge, reduced stability (factor 0.6-0.9)", use_container_width=True)
         with col2:
-            st.image("https://assests.polcdn.com/blog/best-way-to-pack-pallets/avoid-overhang.jpg", caption="Overhang: Boxes hanging off edge, reduced stability (factor 0.6-0.9)", use_container_width=True)
+            st.image("https://www.packagingrevolution.net/wp-content/uploads/2012/05/pallet-load.jpg", caption="No overhang: Flush edges with pallet for full support (factor 1.0)", use_container_width=True)
 
     with st.expander("Gapped Pallet"):
         gapped_pallet = st.selectbox("Gapped Pallet", options=["Yes", "No"], index=0)
         col1, col2 = st.columns(2)
         with col1:
-            st.image("https://www.palletone.com/wp-content/uploads/2024/01/101-anatomy-of-a-block-pallet.jpg", caption="Solid deck wooden pallet: Full board coverage for better support (factor 1.0)", use_container_width=True)
+            st.image("https://www.palletone.com/wp-content/uploads/2024/01/101-anatomy-of-a-stringer-pallet.jpg", caption="Gapped wooden pallet: Spaces between boards, less support (factor 0.8)", use_container_width=True)
         with col2:
-            st.image("https://www.homestratosphere.com/wp-content/uploads/2017/05/Photo-example-wood-pallet-oct9.jpg", caption="Gapped wooden pallet: Spaces between boards, less support (factor 0.8)", use_container_width=True)
+            st.image("https://www.rosepallet.com/wp-content/uploads/2020/06/block-pallet.jpg", caption="Solid wooden pallet: Full board coverage for better support (factor 1.0)", use_container_width=True)
 
     with st.expander("Misalignment"):
         misalignment = st.selectbox("Misalignment", options=list(misalignment_factor.keys()), index=0)  # Default "0in."
@@ -123,7 +123,7 @@ with tab3:
         with col1:
             st.image("https://www.easycargo3d.com/wp-content/webp-express/webp-images/uploads/2023/10/Palletization-part-3-1.jpg.webp", caption="Aligned stacking: Boxes perfectly stacked on top of each other (factor 1.0)", use_container_width=True)
         with col2:
-            st.image("https://www.researchgate.net/publication/289150258/figure/fig10/AS:1008538272952320@1617465670156/Test-setup-for-misaligned-three-high-stacks-of-boxes-along-the-wide-edge.ppm", caption="Misaligned stacking: Boxes offset or shifted, reducing strength (factor 0.45-0.74)", use_container_width=True)
+            st.image("https://www.researchgate.net/publication/289150258/figure/fig9/AS:1008538268753933@1617465669985/Test-setup-for-misaligned-three-high-stacks-of-boxes-along-the-long-edge.ppm", caption="Misaligned stacking: Boxes offset or shifted, reducing strength (factor 0.45-0.74)", use_container_width=True)
 
 # ───────────────────────────────────────────────
 # Calculations (exact match to Excel, with safety checks)
